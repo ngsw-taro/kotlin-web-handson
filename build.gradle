@@ -32,4 +32,14 @@ dependencies {
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile "ch.qos.logback:logback-classic:$logback_version"
     testCompile "io.ktor:ktor-server-tests:$ktor_version"
+
+    // JSON
+    implementation "io.ktor:ktor-jackson:$ktor_version"
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.0'
+
+    // Database
+    implementation 'org.jetbrains.exposed:exposed:0.16.1'
+
+    // Validation
+    implementation 'am.ik.yavi:yavi:0.2.5'
 }
