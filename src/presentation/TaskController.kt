@@ -3,25 +3,25 @@ package com.example.presentation
 import com.example.domain.Task
 import com.example.domain.TaskRepository
 import io.ktor.application.ApplicationCall
-import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
-import io.ktor.util.pipeline.PipelineInterceptor
+import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDateTime
-
-private typealias  Handler = PipelineInterceptor<Unit, ApplicationCall>
 
 class TaskController(
     private val taskRepository: TaskRepository
 ) {
 
-    fun index(): Handler = {
+    fun index(pipelineContext: PipelineContext<Unit, ApplicationCall>) {
+    }
+
+    suspend fun index(call: ApplicationCall) {
         val tasks = taskRepository.findTasks()
         call.respond(tasks)
     }
 
-    fun show(): Handler = {
+    suspend fun show(call: ApplicationCall) {
         val id = call.parameters["id"]?.toLongOrNull()
         val task = id?.let(taskRepository::findTaskById)
         if (task == null) {
@@ -31,12 +31,12 @@ class TaskController(
         }
     }
 
-    fun create(): Handler = handler@{
+    suspend fun create(call: ApplicationCall) {
         val body = call.receive<TaskCreateBody>()
         val violations = body.validate()
         if (violations.isValid.not()) {
             call.response.status(HttpStatusCode.BadRequest)
-            return@handler
+            return
         }
 
         val task = Task.create(
@@ -47,12 +47,12 @@ class TaskController(
         call.response.status(HttpStatusCode.Created)
     }
 
-    fun update(): Handler = handler@{
+    suspend fun update(call: ApplicationCall) {
         val id = call.parameters["id"]?.toLongOrNull()
         val task = id?.let(taskRepository::findTaskById)
         if (task == null) {
             call.respond(HttpStatusCode.NotFound, "not found")
-            return@handler
+            return
         }
 
         val body = call.receive<TaskUpdateBody>()

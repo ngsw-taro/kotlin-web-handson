@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import io.ktor.application.Application
+import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
@@ -51,11 +52,10 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         route("tasks") {
-            get("/", taskController.index())
-            post("/", taskController.create())
-            get("/{id}", taskController.show())
-            patch("/{id}", taskController.update())
+            get("/") { taskController.index(call) }
+            post("/") { taskController.create(call) }
+            get("/{id}") { taskController.show(call) }
+            patch("/{id}") { taskController.update(call) }
         }
     }
 }
-
